@@ -1,0 +1,48 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.eggs/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.ipynb_checkpoints/
+
+# Node / Frontend
+node_modules/
+dist/
+.cache/
+.vite/
+
+# Logs
+logs/
+*.log
+
+# Envs
+.env
+.env.local
+*.env.*
+
+# IDEs
+.vscode/
+.idea/
+
+# App data (safe to regenerate)
+backend/app/data/uploads/
+backend/app/data/vectorstores/
+backend/app/data/app.db
+backend/app/data/index_registry.json
+
+ai/__pycache__/
+ai/services/__pycache__/

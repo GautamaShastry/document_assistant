@@ -1,0 +1,45 @@
+# Core backend framework
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv     
+
+# LangChain core and components
+langchain
+langchain-community
+langchain-huggingface
+langchainhub
+
+# LLM + Embeddings
+sentence-transformers
+transformers
+accelerate
+
+# Document parsing
+PyMuPDF            
+unstructured       
+python-docx
+docx2txt        
+
+# Vector DB
+faiss-cpu         
+
+# Authentication
+python-jose[cryptography]
+passlib[bcrypt]         
+
+# Database
+sqlalchemy
+databases
+asyncpg             
+
+# Ollama integration
+ollama              
+
+# CORS + Middleware
+aiofiles
+starlette
+
+# Dev & Debug
+httpx
+requests

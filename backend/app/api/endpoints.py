@@ -71,6 +71,11 @@ def query(req: QueryRequest):
         raise HTTPException(status_code=500, detail=f"Could not process query: {e}")
     return out
 
+class StreamQuery(BaseModel):
+    index_id: str
+    q: str
+    k: int = 4
+
 @router.post("/stream_query")
 def stream_query(index_id: str, q: str, k: int = 4):
     store_name = resolve_store(index_id)
@@ -79,7 +84,7 @@ def stream_query(index_id: str, q: str, k: int = 4):
     try:
         _ = load_vector_store(store_name)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Could not load vector store: {e}")
+        raise HTTPException(status_code=404, detail=f"Could not load vector store: {e}")
     
     def token():
         try:
@@ -87,4 +92,6 @@ def stream_query(index_id: str, q: str, k: int = 4):
                 yield chunk
         except Exception as e:
             yield f"\n\n[ERROR] Could not process query: {e}\n"
-    return StreamingResponse(token(), media_type="text/plain")
+            
+    headers = {"Cache-Control": "no-store"}
+    return StreamingResponse(token(), media_type="text/plain", headers=headers)

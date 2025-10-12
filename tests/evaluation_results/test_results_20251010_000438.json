@@ -1,0 +1,141 @@
+{
+  "timestamp": "2025-10-09T23:31:01.452236",
+  "tests": [
+    {
+      "test_name": "Document Processing",
+      "file": "tests\\test_documents\\sample.pdf",
+      "status": "success",
+      "documents_loaded": 10,
+      "chunks_created": 10,
+      "avg_chunk_size": 555.2,
+      "min_chunk_size": 60,
+      "max_chunk_size": 886,
+      "processing_time": 0.617
+    },
+    {
+      "test_name": "Vector Store Creation",
+      "store_name": "test_store_1760067062",
+      "status": "success",
+      "store_path": "C:\\Users\\gauta\\OneDrive\\Desktop\\projects\\document_assistant\\backend\\app\\data\\vectorstore\\test_store_1760067062",
+      "chunks_embedded": 10,
+      "embedding_time": 1.795,
+      "embedding_speed": 5.57,
+      "vector_count": 10,
+      "store_size_mb": 0.02
+    },
+    {
+      "test_name": "Document Retrieval",
+      "store_name": "test_store_1760067062",
+      "status": "success",
+      "queries": [
+        {
+          "query": "What is the main topic of this document?",
+          "docs_retrieved": 4,
+          "retrieval_time": 0.059
+        },
+        {
+          "query": "Can you summarize the key points?",
+          "docs_retrieved": 4,
+          "retrieval_time": 0.027
+        },
+        {
+          "query": "What are the most important findings?",
+          "docs_retrieved": 4,
+          "retrieval_time": 0.027
+        }
+      ],
+      "total_queries": 3,
+      "avg_retrieval_time": 0.038,
+      "min_retrieval_time": 0.027,
+      "max_retrieval_time": 0.059
+    },
+    {
+      "test_name": "RAG Pipeline",
+      "store_name": "test_store_1760067062",
+      "status": "success",
+      "queries": [
+        {
+          "query": "What is the main topic of this document?",
+          "answer_length": 3158,
+          "sources_count": 4,
+          "total_time": 361.304,
+          "retrieval_time": 0.04,
+          "generation_time": 361.233
+        },
+        {
+          "query": "Can you summarize the key points?",
+          "answer_length": 4127,
+          "sources_count": 4,
+          "total_time": 424.342,
+          "retrieval_time": 0.489,
+          "generation_time": 423.83
+        },
+        {
+          "query": "What are the most important findings?",
+          "answer_length": 5035,
+          "sources_count": 4,
+          "total_time": 342.894,
+          "retrieval_time": 0.398,
+          "generation_time": 342.483
+        },
+        {
+          "query": "Are there any recommendations mentioned?",
+          "answer_length": 7799,
+          "sources_count": 4,
+          "total_time": 638.155,
+          "retrieval_time": 0.405,
+          "generation_time": 637.724
+        },
+        {
+          "query": "What methodology was used?",
+          "answer_length": 3289,
+          "sources_count": 4,
+          "total_time": 247.735,
+          "retrieval_time": 0.401,
+          "generation_time": 247.331
+        }
+      ],
+      "total_queries": 5,
+      "avg_total_time": 402.886,
+      "avg_generation_time": 402.52,
+      "min_total_time": 247.735,
+      "max_total_time": 638.155
+    }
+  ],
+  "summary": {
+    "total_tests": 4,
+    "successful_tests": 4,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "component_metrics": {
+      "document_processor": {
+        "documents_processed": 1,
+        "total_chunks_created": 10,
+        "total_processing_time": 0.6147170066833496,
+        "errors": 0,
+        "avg_processing_time": 0.6147170066833496
+      },
+      "vector_store": {
+        "stores_created": 1,
+        "stores_loaded": 4,
+        "documents_indexed": 10,
+        "total_embedding_time": 1.79280686378479,
+        "total_retrieval_time": 0.11185526847839355,
+        "retrieval_count": 3,
+        "avg_embedding_time_per_store": 1.79280686378479,
+        "avg_retrieval_time": 0.03728508949279785
+      },
+      "rag_pipeline": {
+        "queries_processed": 5,
+        "total_query_time": 2014.3344068527222,
+        "total_generation_time": 2012.601271867752,
+        "total_tokens_generated": 5849,
+        "retrieval_failures": 0,
+        "generation_failures": 0,
+        "avg_query_time": 402.86688137054443,
+        "avg_generation_time": 402.5202543735504,
+        "success_rate": 100.0
+      }
+    }
+  }
+}

@@ -1,77 +1,65 @@
 """
-AI Services Package for Intelligent Document Assistant
+AI Services Package for RAG Pipeline
 
 This package contains all AI-related functionality:
 - Document processing and loading
 - Vector store management with FAISS
-- RAG pipeline with conversational context
+- RAG pipeline implementation
 - Configuration and settings
 """
 
-from .settings import (
+from ai.settings import (
     OLLAMA_MODEL,
     OLLAMA_HOST,
     CHUNK_SIZE,
     CHUNK_OVERLAP,
     EMBED_MODEL_NAME,
-    EMBED_DEVICE,
-    EMBED_NORMALIZE,
     VECTORSTORE_DIR,
     UPLOAD_DIR
 )
 
-from .services.document import (
+from ai.services.document import (
+    DocumentProcessor,
     load_document,
-    split_documents,
-    SUPPORTED_TYPES
+    split_documents
 )
 
-from .services.vector_store import (
+from ai.services.vector_store import (
+    VectorStoreManager,
     create_vector_store,
-    upsert_documents_to_vector_store,
     load_vector_store,
-    get_retriever,
-    delete_vector_store
+    get_retriever
 )
 
-from .services.rag_pipeline import (
+from ai.services.rag_pipeline import (
+    RAGPipeline,
     answer,
-    stream_answer,
-    conversational_answer,
-    stream_conversational_answer,
-    format_chat_messages_for_context,
-    get_conversation_summary
+    stream_answer
 )
+
+__version__ = "1.0.0"
 
 __all__ = [
     # Settings
     "OLLAMA_MODEL",
-    "OLLAMA_HOST", 
+    "OLLAMA_HOST",
     "CHUNK_SIZE",
     "CHUNK_OVERLAP",
     "EMBED_MODEL_NAME",
-    "EMBED_DEVICE",
-    "EMBED_NORMALIZE",
     "VECTORSTORE_DIR",
     "UPLOAD_DIR",
     
-    # Document processing
+    # Classes
+    "DocumentProcessor",
+    "VectorStoreManager",
+    "RAGPipeline",
+    
+    # Functions
     "load_document",
     "split_documents",
-    "SUPPORTED_TYPES",
-    
-    # Vector store
     "create_vector_store",
-    "upsert_documents_to_vector_store", 
     "load_vector_store",
     "get_retriever",
-    "delete_vector_store",
-    
-    # RAG pipeline
     "answer",
     "stream_answer",
-    "conversational_answer",
-    "stream_conversational_answer",
-    "format_chat_messages_for_context",
-    "get_conversation_summary"
 ]

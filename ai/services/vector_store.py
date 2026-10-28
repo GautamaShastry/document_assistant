@@ -3,6 +3,7 @@ Vector Store Management Module
 Handles FAISS vector store operations with performance tracking
 """
 import os
+import re
 import time
 import shutil
 import logging
@@ -45,13 +46,19 @@ class VectorStoreManager:
     
     def _store_path(self, store_name: str) -> Path:
         """Get full path for a vector store"""
-        return VECTORSTORE_DIR / store_name
+        if not isinstance(store_name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,79}", store_name):
+            raise ValueError("Invalid store name; use 1-80 ASCII letters, digits, hyphens, or underscores")
+        root = VECTORSTORE_DIR.resolve()
+        path = (root / store_name).resolve()
+        if path.parent != root:
+            raise ValueError("Store name escapes the index directory")
+        return path
     
     def create_vector_store(
         self,
         chunks: List[Document],
         store_name: str,
-        overwrite: bool = True
+        overwrite: bool = False
     ) -> str:
         """
         Create a new FAISS vector store
@@ -226,11 +233,14 @@ class VectorStoreManager:
             db = self.load_vector_store(store_name)
             
             if score_threshold is not None:
-                # Search with score threshold
-                docs_and_scores = db.similarity_search_with_score(query, k=k)
+                # FAISS raw scores are distances (lower is better).
+                # Relevance scores are higher-is-better.
+                if not 0.0 <= score_threshold <= 1.0:
+                    raise ValueError("score_threshold must be between 0 and 1")
+                docs_and_scores = db.similarity_search_with_relevance_scores(query, k=k)
                 docs = [
-                    doc for doc, score in docs_and_scores
-                    if score >= score_threshold
+                    doc for doc, relevance in docs_and_scores
+                    if relevance >= score_threshold
                 ]
             else:
                 docs = db.similarity_search(query, k=k)

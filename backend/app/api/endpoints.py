@@ -35,9 +35,6 @@ class StreamQueryRequest(BaseModel):
     store_name: str = Field(..., description="Vector store to query")
     k: int = Field(4, ge=1, le=20, description="Number of documents to retrieve")
     
-class StreamingResponse(BaseModel):
-    answer: str
-
 class HealthResponse(BaseModel):
     status: str
     message: str
@@ -104,13 +101,23 @@ async def upload_document(
     upload_dir = Path("backend/app/data/uploads")
     upload_dir.mkdir(parents=True, exist_ok=True)
     
-    file_path = upload_dir / f"{uuid.uuid4().hex}_{file.filename}"
+    original_name = Path((file.filename or "").replace("\\", "/")).name
+    if not original_name or Path(original_name).suffix.lower() not in {".pdf", ".docx", ".txt"}:
+        raise HTTPException(status_code=400, detail="Expected PDF, DOCX, or TXT")
+    file_path = upload_dir / f"{uuid.uuid4().hex}_{original_name}"
     
     try:
-        # Save file
+        from ai.settings import PROCESSING_LIMITS
+        total_bytes = 0
         with open(file_path, "wb") as f:
-            content = await file.read()
-            f.write(content)
+            while True:
+                chunk = await file.read(1024 * 1024)
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                if total_bytes > PROCESSING_LIMITS["max_file_size"]:
+                    raise HTTPException(status_code=413, detail="File too large")
+                f.write(chunk)
         
         start_time = time.time()
         
@@ -120,30 +127,37 @@ async def upload_document(
         
         # Generate store name if not provided
         if not store_name:
-            base_name = Path(file.filename).stem
+            base_name = Path(original_name).stem
             # Clean the filename for use as store name
             clean_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in base_name)
             store_name = f"{clean_name}_{uuid.uuid4().hex[:8]}"
         
         # Create vector store
-        vector_manager.create_vector_store(chunks, store_name)
+        try:
+            vector_manager.create_vector_store(chunks, store_name, overwrite=False)
+        except FileExistsError:
+            raise HTTPException(status_code=409, detail="Index already exists")
         
         processing_time = time.time() - start_time
         
         return UploadResponse(
             status="success",
             store_name=store_name,
-            filename=file.filename,
+            filename=original_name,
             chunks_created=len(chunks),
             processing_time=round(processing_time, 2),
             message=f"Document processed successfully. Use store_name '{store_name}' to query."
         )
         
-    except Exception as e:
-        # Clean up file on error
+    except HTTPException:
+        raise
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Upload failed")
+    finally:
         if file_path.exists():
             file_path.unlink()
-        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 
 @router.post("/query", response_model=QueryResponse)
@@ -246,6 +260,8 @@ async def get_store_stats(store_name: str):
         if "error" in stats:
             raise HTTPException(status_code=404, detail=stats["error"])
         return stats
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
 
